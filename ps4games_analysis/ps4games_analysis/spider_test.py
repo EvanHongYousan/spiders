@@ -9,7 +9,7 @@ from collections import deque
 queue = deque()
 visited = set()
 
-url = 'https://s.2.taobao.com/list/list.htm?q=ps4&search_type=item&app=shopsearch/'
+url = 'http://www.baidu.com'
 
 queue.append(url)
 cnt = 0
