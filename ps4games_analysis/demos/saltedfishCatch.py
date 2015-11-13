@@ -19,25 +19,38 @@ cnt = 0
 # soup = BeautifulSoup(response.text)
 # hrefs = soup.find(id='J_Pages').find_all('a')
 # for items in hrefs:
-#     print('https:'+items['href'])
+# print('https:'+items['href'])
 
 while queue:
     url = queue.popleft()
 
-    visited |= {url}
+    visited.add(url)
     print('已经抓取:', str(cnt), '正在抓取 <---', url)
     print('当前len(visited)：', len(visited))
+    print('当前len(queue):', len(queue))
     cnt += 1
 
     time.sleep(2)
     response = requests.get(url)
     soup = BeautifulSoup(response.text)
     hrefs = soup.find(id='J_Pages').find_all('a')
-    for item in hrefs:
-        print('https:'+item['href'] not in visited)
-        print(visited)
-        print('https:'+item['href'])
-        if 'https:'+item['href'] not in visited:
-            queue.append('https:'+item['href'])
-            print('加入队列--->', 'https:'+item['href'])
+    tempurls = []
+    for href in hrefs:
+        tempurls.append('https:'+href['href'])
+    for item in tempurls:
+        if item not in visited and item not in queue:
+            queue.append(item)
+            print('加入队列--->', item)
+            with open('queue.txt', 'w') as f:
+                temp = ''
+                for queI in queue:
+                    temp += queI + '\n'
+                f.write(str(temp))
+                f.close()
+            with open('visited.txt', 'w') as f:
+                temp = ''
+                for visiI in visited:
+                    temp += visiI + '\n'
+                f.write(str(temp))
+                f.close()
 
