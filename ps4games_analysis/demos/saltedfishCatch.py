@@ -1,10 +1,10 @@
 __author__ = 'yantianyu'
 
 import requests
+import urllib.request
 from bs4 import BeautifulSoup
 from collections import deque
 import time
-import codecs
 import csv
 
 queue = deque()
@@ -54,8 +54,9 @@ while queue:
     cnt += 1
 
     time.sleep(2)
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text)
+    # response = requests.get(url)
+    response = urllib.request.urlopen(url)
+    soup = BeautifulSoup(response.read())
 
     blbnObjs.extend(getBlbnObj(soup))
 
@@ -76,6 +77,6 @@ print(blbnObjs)
 
 with open('wicher3Objs.csv', 'w', newline='') as csvF:
     writer = csv.writer(csvF)
-    writer.writerow(['标题', '价钱', '网址'])
+    writer.writerow([u'标题', u'价钱', u'网址'])
     writer.writerows(blbnObjs)
     csvF.close()
