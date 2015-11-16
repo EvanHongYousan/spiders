@@ -2,6 +2,7 @@ __author__ = 'yantianyu'
 
 import requests
 import urllib.request
+from urllib.parse import quote
 from bs4 import BeautifulSoup
 from collections import deque
 import time
@@ -10,7 +11,9 @@ import csv
 queue = deque()
 visited = set()
 
-url = 'https://s.2.taobao.com/list/list.htm?q=ps4+%CE%D7%CA%A63&search_type=item&app=shopsearch'
+searchQuery = input('输入要搜索物品的关键词：')
+
+url = 'https://s.2.taobao.com/list/list.htm?q='+quote(searchQuery, '', 'gb2312') +'&search_type=item&app=shopsearch'
 # url='https://www.baidu.com'
 # url = 'http://www.taobao.com/'
 
@@ -75,7 +78,7 @@ with open('visited.txt', 'w') as f:
 
 print(blbnObjs)
 
-with open('wicher3Objs.csv', 'w', newline='') as csvF:
+with open('【关键词：'+searchQuery+'】淘宝闲鱼抓取结果.csv', 'w', newline='') as csvF:
     writer = csv.writer(csvF)
     writer.writerow([u'标题', u'价钱', u'网址'])
     writer.writerows(blbnObjs)
