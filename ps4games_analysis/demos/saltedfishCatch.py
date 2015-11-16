@@ -1,4 +1,5 @@
 __author__ = 'yantianyu'
+__version__ = 1.1
 
 import requests
 import urllib.request
@@ -11,9 +12,13 @@ import csv
 queue = deque()
 visited = set()
 
+print('author: EvanHongYousan')
+print('Email: 1370204201@qq.com')
+print('github: https://github.com/EvanHongYousan')
+print('工具用于抓取淘宝闲鱼2手市场上的物品数据，并生成 [价格|标题|网址] 格式的excel文件')
 searchQuery = input('输入要搜索物品的关键词：')
 
-url = 'https://s.2.taobao.com/list/list.htm?q='+quote(searchQuery, '', 'gb2312') +'&search_type=item&app=shopsearch'
+url = 'https://s.2.taobao.com/list/list.htm?q=' + quote(searchQuery, '', 'gb2312') + '&search_type=item&app=shopsearch'
 # url='https://www.baidu.com'
 # url = 'http://www.taobao.com/'
 
@@ -43,7 +48,10 @@ def getBlbnObj(data):
         title = item.find('div', {'class': 'item-info'}).find('h4', {'class': 'item-title'}).find('a').contents[0]
         price = item.find('div', {'class': 'item-info'}).find('div', {'class': 'item-price'}).find('em').contents[0]
         url = 'http:' + item.find('div', {'class': 'item-info'}).find('h4', {'class': 'item-title'}).find('a')['href']
-        dataContainers.append((title, price, url))
+        location = \
+            item.find('div', {'class': 'seller-info-wrapper'}).find('div', {'class': 'seller-info'}).find('div', {
+                'class': 'seller-location'}).contents[0]
+        dataContainers.append((price, location, title, url))
     return dataContainers
 
 
@@ -78,8 +86,8 @@ with open('visited.txt', 'w') as f:
 
 print(blbnObjs)
 
-with open('【关键词：'+searchQuery+'】淘宝闲鱼抓取结果.csv', 'w', newline='') as csvF:
+with open('【关键词：' + searchQuery + '】淘宝闲鱼抓取结果.csv', 'w', newline='') as csvF:
     writer = csv.writer(csvF)
-    writer.writerow([u'标题', u'价钱', u'网址'])
-    writer.writerows(blbnObjs)
+    writer.writerow([u'价格', u'所在地', u'标题', u'网址'])
+    writer.writerows(sorted(blbnObjs, key=lambda item: float(item[0])))
     csvF.close()
