@@ -46,13 +46,18 @@ def getBlbnObj(data):
     data = data.find(id='J_ItemListsContainer')
     items = data.find(attrs={'class': 'item-lists'}).findAll(attrs={'class': 'item-idle'})
     for item in items:
-        title = item.find('div', {'class': 'item-info'}).find('h4', {'class': 'item-title'}).find('a').contents[0]
-        price = item.find('div', {'class': 'item-info'}).find('div', {'class': 'item-price'}).find('em').contents[0]
-        url = 'http:' + item.find('div', {'class': 'item-info'}).find('h4', {'class': 'item-title'}).find('a')['href']
-        location = \
-            item.find('div', {'class': 'seller-info-wrapper'}).find('div', {'class': 'seller-info'}).find('div', {
-                'class': 'seller-location'}).contents[0]
-        dataContainers.append((price, location, title, url))
+        try:
+            title = item.find('div', {'class': 'item-info'}).find('h4', {'class': 'item-title'}).find('a').contents[0]
+            price = item.find('div', {'class': 'item-info'}).find('div', {'class': 'item-price'}).find('em').contents[0]
+            url = 'http:' + item.find('div', {'class': 'item-info'}).find('h4', {'class': 'item-title'}).find('a')['href']
+            location = item.find('div', {'class': 'seller-info-wrapper'}).find('div', {'class': 'seller-info'}).find('div', {'class': 'seller-location'}).contents[0]
+            description = item.find('div', {'class': 'item-info'}).find('div', {'class': 'item-description'}).contents[0]
+            description = description.replace('\xa0', '')
+        except Exception as error:
+            description = 'null'
+            print(error)
+        finally:
+            dataContainers.append((price, location, title, url, description))
     return dataContainers
 
 
@@ -85,13 +90,13 @@ with open('visited.txt', 'w') as f:
     f.write(str(temp))
     f.close()
 
-print(blbnObjs)
 
 now = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-print(type(now))
 
 with open('【关键词：' + searchQuery + ' ' +now + '】淘宝闲鱼抓取结果.csv', 'w', newline='') as csvF:
     writer = csv.writer(csvF)
-    writer.writerow([u'价格', u'所在地', u'标题', u'网址'])
-    writer.writerows(sorted(blbnObjs, key=lambda item: float(item[0])))
+    writer.writerow([u'价格', u'所在地', u'标题', u'网址', '描述'])
+    blbnObjs = sorted(blbnObjs, key=lambda item: float(item[0]))
+    print(blbnObjs)
+    writer.writerows(blbnObjs)
     csvF.close()
