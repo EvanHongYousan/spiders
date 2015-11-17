@@ -6,6 +6,7 @@ import urllib.request
 from urllib.parse import quote
 from bs4 import BeautifulSoup
 from collections import deque
+from datetime import datetime
 import time
 import csv
 
@@ -86,7 +87,10 @@ with open('visited.txt', 'w') as f:
 
 print(blbnObjs)
 
-with open('【关键词：' + searchQuery + '】淘宝闲鱼抓取结果.csv', 'w', newline='') as csvF:
+now = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+print(type(now))
+
+with open('【关键词：' + searchQuery + ' ' +now + '】淘宝闲鱼抓取结果.csv', 'w', newline='') as csvF:
     writer = csv.writer(csvF)
     writer.writerow([u'价格', u'所在地', u'标题', u'网址'])
     writer.writerows(sorted(blbnObjs, key=lambda item: float(item[0])))
